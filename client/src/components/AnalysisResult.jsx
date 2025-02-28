@@ -7,13 +7,30 @@ ChartJS.register(ArcElement, Tooltip, Legend);
 function AnalysisResult({ result }) {
   const insightsText = result.geminiInsights || '';
 
-  // Robust parsing aligned with VirusTotal and Gemini
+  // Debug raw insights text
+  console.log('Raw geminiInsights:', insightsText);
+
+  // Robust parsing with improved regex
   const sections = {
     title: result.input || 'Unknown Input',
     threats: insightsText.match(/Threats & Vulnerabilities:\*\*([\s\S]*?)(?=\*\*|$)/i)?.[1]?.trim().split('\n').map(line => line.replace(/^\*\s*|-|\s*\*/g, '').trim()).filter(line => line.length > 0) || ['No specific threats detected'],
     reputation: insightsText.match(/Reputation:\*\*([\s\S]*?)(?=\*\*|$)/i)?.[1]?.trim().split('\n').map(line => line.replace(/^\*\s*|-|\s*\*/g, '').trim()).filter(line => line.length > 0) || ['No data available'],
     context: insightsText.match(/Context:\*\*([\s\S]*?)(?=\*\*|$)/i)?.[1]?.trim().split('\n').map(line => line.replace(/^\*\s*|-|\s*\*/g, '').trim()).filter(line => line.length > 0) || ['No data available'],
-    safetyTips: insightsText.match(/Safety Tips:\*\*([\s\S]*?)(?=\*\*|$)/i)?.[1]?.trim().split('\n').map(line => line.replace(/^\d+\.\s*|\*\s*|-|\s*\*/g, '').trim()).filter(line => line.length > 0) || ['No specific tips available'],
+    safetyTips: (() => {
+      // Updated regex to match the entire "Safety Tips" section
+      const match = insightsText.match(/Safety Tips:\*\*([\s\S]*?)(?=\n\*\*|$)/i);
+      console.log('Safety Tips Match:', match);
+      if (match && match[1]) {
+        const tips = match[1]
+          .trim()
+          .split('\n') // Split into lines
+          .map(line => line.replace(/^\d+\.\s*|\*\s*|-|\s*\*/g, '').trim()) // Clean up each line
+          .filter(line => line.length > 0 && !line.match(/^\s*$/)); // Remove empty lines
+        console.log('Parsed Safety Tips:', tips);
+        return tips.length > 0 ? tips : ['No specific tips available'];
+      }
+      return ['No specific tips available'];
+    })(),
     pieChart: insightsText.match(/```json\s*([\s\S]*?)\s*```/) ? JSON.parse(insightsText.match(/```json\s*([\s\S]*?)\s*```/)[1].replace(/\s/g, '')) : {
       Safe: Math.round(((result.vtStats?.harmless || 0) + (result.vtStats?.undetected || 0)) / ((result.vtStats?.harmless || 0) + (result.vtStats?.undetected || 0) + (result.vtStats?.malicious || 0) + (result.vtStats?.suspicious || 0) + (result.vtStats?.timeout || 0)) * 100),
       Malicious: result.vtStats?.malicious || 0,
