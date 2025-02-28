@@ -5,6 +5,7 @@ import CyberGuard from './components/CyberGuard';
 import ParentalMonitor from './components/ParentalMonitor';
 import ThreatDashboard from './components/ThreatDashboard';
 import CommunityPosts from './components/CommunityPosts';
+import CybersecurityNews from './components/CybersecurityNews'; // Added import
 import Login from './components/Login';
 import { supabase } from './supabase';
 
@@ -156,6 +157,12 @@ function App() {
                     Threat Dashboard
                   </button>
                   <button
+                    onClick={() => setView('news')}
+                    className={`btn ${view === 'news' ? 'btn-primary bg-[#00c4b4] text-white' : 'btn-secondary bg-[#6b7280] text-white'} px-4 py-2 rounded`}
+                  >
+                    Cybersecurity News
+                  </button>
+                  <button
                     onClick={() => setView('community')}
                     className={`btn ${view === 'community' ? 'btn-primary bg-[#00c4b4] text-white' : 'btn-secondary bg-[#6b7280] text-white'} px-4 py-2 rounded`}
                   >
@@ -177,7 +184,7 @@ function App() {
         >
           <h2 className="text-5xl font-extrabold text-[#1f2a44]">Secure Your Digital World</h2>
           <p className="text-lg text-[#6b7280] max-w-2xl">
-            Advanced AI-powered scanning, parental monitoring, and community discussions to keep you safe online. Sign in for full access!
+            Advanced AI-powered scanning, parental monitoring, news updates, and community discussions to keep you safe online. Sign in for full access!
           </p>
         </motion.section>
 
@@ -196,6 +203,8 @@ function App() {
             <ParentalMonitor />
           ) : view === 'dashboard' ? (
             <ThreatDashboard />
+          ) : view === 'news' ? (
+            <CybersecurityNews />
           ) : view === 'community' ? (
             <CommunityPosts />
           ) : (

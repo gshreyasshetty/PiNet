@@ -51,8 +51,8 @@ const CybersecurityNews = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-indigo-100 to-purple-100">
-        <div className="text-2xl font-semibold text-gray-700 animate-pulse">
+      <div className="min-h-screen flex items-center justify-center bg-[#ffffff]">
+        <div className="text-2xl font-semibold text-[#1f2a44] animate-pulse">
           Fetching Cybersecurity Updates...
         </div>
       </div>
@@ -61,7 +61,7 @@ const CybersecurityNews = () => {
 
   if (error) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-indigo-100 to-purple-100">
+      <div className="min-h-screen flex items-center justify-center bg-[#ffffff]">
         <div className="text-xl text-red-600 font-medium">Error: {error}</div>
       </div>
     );
@@ -71,8 +71,8 @@ const CybersecurityNews = () => {
     <div className="w-full">
       {/* Header */}
       <header className="bg-white shadow-md rounded-lg p-8 text-center border-b border-gray-200">
-        <h1 className="text-4xl font-bold text-indigo-800">CyberWatch News</h1>
-        <p className="mt-2 text-lg text-gray-600">Global Cybersecurity Updates at Your Fingertips</p>
+        <h1 className="text-4xl font-bold text-[#00c4b4]">CyberWatch News</h1>
+        <p className="mt-2 text-lg text-[#6b7280]">Global Cybersecurity Updates at Your Fingertips</p>
       </header>
 
       {/* News Grid */}
@@ -93,17 +93,17 @@ const CybersecurityNews = () => {
               />
             </div>
             <div className="p-6">
-              <h2 className="text-xl font-semibold text-gray-800 line-clamp-2 hover:text-indigo-600">
+              <h2 className="text-xl font-semibold text-[#1f2a44] line-clamp-2 hover:text-[#00c4b4]">
                 {item.title}
               </h2>
-              <p className="mt-2 text-gray-600 text-sm line-clamp-3">{item.summary}</p>
+              <p className="mt-2 text-[#6b7280] text-sm line-clamp-3">{item.summary}</p>
               <div className="mt-4 flex justify-between items-center">
-                <span className="text-xs text-gray-500">{item.date}</span>
+                <span className="text-xs text-[#9ca3af]">{item.date}</span>
                 <a
                   href={item.link}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-indigo-600 font-semibold text-sm hover:bg-indigo-100 px-3 py-1 rounded transition"
+                  className="text-[#00c4b4] font-semibold text-sm hover:bg-[#00c4b4]/10 px-3 py-1 rounded transition"
                 >
                   Read More
                 </a>
@@ -119,7 +119,7 @@ const CybersecurityNews = () => {
           <button
             onClick={handlePrevPage}
             disabled={currentPage === 1}
-            className="px-4 py-2 bg-white border border-gray-300 rounded-lg text-indigo-600 font-semibold hover:bg-indigo-100 disabled:text-gray-400 disabled:cursor-not-allowed transition"
+            className="px-4 py-2 bg-white border border-[#d1d5db] rounded-lg text-[#00c4b4] font-semibold hover:bg-[#00c4b4]/10 disabled:text-[#9ca3af] disabled:cursor-not-allowed transition"
           >
             Previous
           </button>
@@ -129,8 +129,8 @@ const CybersecurityNews = () => {
               onClick={() => goToPage(page)}
               className={`px-4 py-2 rounded-lg font-semibold transition ${
                 currentPage === page
-                  ? 'bg-indigo-600 text-white'
-                  : 'bg-white border border-gray-300 text-gray-700 hover:bg-indigo-100'
+                  ? 'bg-[#00c4b4] text-white'
+                  : 'bg-white border border-[#d1d5db] text-[#1f2a44] hover:bg-[#00c4b4]/10'
               }`}
             >
               {page}
@@ -139,7 +139,7 @@ const CybersecurityNews = () => {
           <button
             onClick={handleNextPage}
             disabled={currentPage === totalPages}
-            className="px-4 py-2 bg-white border border-gray-300 rounded-lg text-indigo-600 font-semibold hover:bg-indigo-100 disabled:text-gray-400 disabled:cursor-not-allowed transition"
+            className="px-4 py-2 bg-white border border-[#d1d5db] rounded-lg text-[#00c4b4] font-semibold hover:bg-[#00c4b4]/10 disabled:text-[#9ca3af] disabled:cursor-not-allowed transition"
           >
             Next
           </button>
