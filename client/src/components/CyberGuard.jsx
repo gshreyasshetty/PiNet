@@ -22,23 +22,31 @@ function CyberGuard() {
     try {
       const { data: { session } } = await supabase.auth.getSession();
       const token = session?.access_token;
+      const headers = token ? { Authorization: `Bearer ${token}` } : {};
+
+      const normalizedInput = input.trim();
+      if (inputType === 'scan' && !normalizedInput) {
+        throw new Error('Please provide a valid input (URL, domain, hash, or IP address)');
+      }
+      if (inputType === 'file' && !file) {
+        throw new Error('Please upload a file to scan');
+      }
 
       let response;
       if (inputType === 'scan') {
         response = await axios.get('http://localhost:5000/api/scan', {
-          params: { input },
-          headers: token ? { Authorization: `Bearer ${token}` } : {},
+          params: { input: normalizedInput },
+          headers,
         });
-      } else {
+      } else if (inputType === 'file') {
         const formData = new FormData();
         formData.append('file', file);
-        response = await axios.post('http://localhost:5000/api/scan-file', formData, {
-          headers: token ? { Authorization: `Bearer ${token}` } : {},
-        });
+        response = await axios.post('http://localhost:5000/api/scan-file', formData, { headers });
       }
       setResult({ ...response.data, input: input || file?.name });
     } catch (err) {
-      setError(err.response?.data?.error || `Failed to analyze ${inputType}.`);
+      console.error('Analysis error:', err.message);
+      setError(err.response?.data?.error || err.message || `Failed to analyze ${inputType}. Please try again.`);
     } finally {
       setLoading(false);
     }
@@ -53,43 +61,49 @@ function CyberGuard() {
     >
       <ShieldCheck size={40} className="text-[#00c4b4]" />
       <h2 className="text-3xl font-bold text-[#1f2a44]">CyberGuard Scanner</h2>
-      <p className="text-center text-[#6b7280] max-w-md">Scan URLs, files, or more with advanced AI for ultimate protection.</p>
+      <p className="text-center text-[#6b7280] max-w-md">Scan inputs or files with advanced AI for ultimate protection.</p>
       <div className="flex space-x-4">
         <button
           onClick={() => setInputType('scan')}
-          className={`btn ${inputType === 'scan' ? 'btn-primary' : 'btn-secondary'}`}
+          className={`btn ${inputType === 'scan' ? 'btn-primary bg-[#00c4b4] text-white' : 'btn-secondary bg-[#6b7280] text-white'} px-4 py-2 rounded`}
         >
           Scan Input
         </button>
         <button
           onClick={() => setInputType('file')}
-          className={`btn ${inputType === 'file' ? 'btn-primary' : 'btn-secondary'}`}
+          className={`btn ${inputType === 'file' ? 'btn-primary bg-[#00c4b4] text-white' : 'btn-secondary bg-[#6b7280] text-white'} px-4 py-2 rounded`}
         >
           <FileText size={16} className="mr-2 inline" /> Scan File
         </button>
       </div>
       <form onSubmit={handleAnalyze} className="w-full max-w-md space-y-6">
         {inputType === 'scan' ? (
-          <input
-            type="text"
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            placeholder="Enter URL, domain, hash, or IP"
-            className="input w-full p-3 border border-[#e2e8f0] rounded-md text-[#1f2a44] placeholder-[#6b7280] focus:border-[#00c4b4] focus:ring-2 focus:ring-[#00c4b4]/50"
-            disabled={loading}
-          />
+          <div>
+            <label className="block text-sm font-medium text-[#1f2a44] mb-1">Input URL, Domain, Hash, or IP:</label>
+            <input
+              type="text"
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              placeholder="e.g., https://example.com"
+              className="input w-full p-3 border border-[#e2e8f0] rounded-md text-[#1f2a44] placeholder-[#6b7280] focus:border-[#00c4b4] focus:ring-2 focus:ring-[#00c4b4]/50"
+              disabled={loading}
+            />
+          </div>
         ) : (
-          <input
-            type="file"
-            onChange={(e) => setFile(e.target.files[0])}
-            className="input w-full p-3 border border-[#e2e8f0] rounded-md text-[#1f2a44] file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-[#00c4b4] file:text-white hover:file:bg-[#00a89a]"
-            disabled={loading}
-          />
+          <div>
+            <label className="block text-sm font-medium text-[#1f2a44] mb-1">Upload File:</label>
+            <input
+              type="file"
+              onChange={(e) => setFile(e.target.files[0])}
+              className="input w-full p-3 border border-[#e2e8f0] rounded-md text-[#1f2a44] file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-[#00c4b4] file:text-white hover:file:bg-[#00a89a]"
+              disabled={loading}
+            />
+          </div>
         )}
         <button
           type="submit"
           disabled={loading}
-          className={`btn btn-primary w-full ${loading ? 'bg-[#d1d5db] cursor-not-allowed' : 'bg-[#00c4b4] hover:bg-[#00a89a]'} text-white`}
+          className={`btn btn-primary w-full ${loading ? 'bg-[#d1d5db] cursor-not-allowed' : 'bg-[#00c4b4] hover:bg-[#00a89a]'} text-white px-4 py-2 rounded`}
         >
           {loading ? (
             <span className="flex items-center justify-center">
